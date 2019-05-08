@@ -5,7 +5,7 @@ from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 
-from .layer_utils import ReflectionPadding2D, res_block
+from .layer_utils import ReflectionPadding2D, dense_block, transition_block,res_block
 
 # the paper defined hyper-parameter:chr
 channel_rate = 64
@@ -34,17 +34,25 @@ def generator_model():
 
     n_downsampling = 2
     for i in range(n_downsampling):
-        mult = 2**i
-        x = Conv2D(filters=ngf*mult*2, kernel_size=(3, 3), strides=2, padding='same')(x)
+        mult = 2 ** i
+        x = Conv2D(filters=ngf * mult * 2, kernel_size=(3, 3), strides=2, padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
 
-    mult = 2**n_downsampling
+    mult = 2 ** n_downsampling
+    nb_filter = ngf*mult
     for i in range(n_blocks_gen):
         x = res_block(x, ngf*mult, use_dropout=True)
+        # x, nb_filter = dense_block(x, nb_layers=4, nb_filter=nb_filter, growth_rate=ngf * mult,
+        #                    bottleneck=False, dropout_rate=0.5)
+        # TODO: 是否有必要家transition_block 吗？
+        # x = transition_block(x, nb_filter)
+    # 最后一层的denseblock 不一样，单独处理
+    # x, nb_filter = dense_block(x, nb_layers=4, nb_filter=nb_filter, growth_rate=ngf * mult,
+    #                    bottleneck=True, dropout_rate=0.5)
 
     for i in range(n_downsampling):
-        mult = 2**(n_downsampling - i)
+        mult = 2 ** (n_downsampling - i)
         # x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
         x = UpSampling2D()(x)
         x = Conv2D(filters=int(ngf * mult / 2), kernel_size=(3, 3), padding='same')(x)
@@ -57,9 +65,12 @@ def generator_model():
 
     outputs = Add()([x, inputs])
     # outputs = Lambda(lambda z: K.clip(z, -1, 1))(x)
-    outputs = Lambda(lambda z: z/2)(outputs)
+    outputs = Lambda(lambda z: z / 2)(outputs)
 
     model = Model(inputs=inputs, outputs=outputs, name='Generator')
+
+    # summary
+    model.summary()
     return model
 
 
@@ -73,13 +84,13 @@ def discriminator_model():
 
     nf_mult, nf_mult_prev = 1, 1
     for n in range(n_layers):
-        nf_mult_prev, nf_mult = nf_mult, min(2**n, 8)
-        x = Conv2D(filters=ndf*nf_mult, kernel_size=(4, 4), strides=2, padding='same')(x)
+        nf_mult_prev, nf_mult = nf_mult, min(2 ** n, 8)
+        x = Conv2D(filters=ndf * nf_mult, kernel_size=(4, 4), strides=2, padding='same')(x)
         x = BatchNormalization()(x)
         x = LeakyReLU(0.2)(x)
 
-    nf_mult_prev, nf_mult = nf_mult, min(2**n_layers, 8)
-    x = Conv2D(filters=ndf*nf_mult, kernel_size=(4, 4), strides=1, padding='same')(x)
+    nf_mult_prev, nf_mult = nf_mult, min(2 ** n_layers, 8)
+    x = Conv2D(filters=ndf * nf_mult, kernel_size=(4, 4), strides=1, padding='same')(x)
     x = BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
 
