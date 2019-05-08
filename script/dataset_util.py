@@ -36,16 +36,25 @@ def convert_img2npy(img_dir, npy_dir):
 
 
 if __name__ == '__main__':
-    # 清晰图片目录
-    clear_img_dir = './datasets/image/clear'
-    # 清晰图片的npy存储目录
-    clear_npy_dir = './datasets/npy/clear'
-    # 雾图目录
-    haze_img_dir = './datasets/image/haze'
-    # 雾图npy文件存储目录
-    haze_npy_dir = './datasets/npy/haze'
+    mode = 'test'       # 'test' or 'train'
 
-    # 转换清晰图
-    convert_img2npy(clear_img_dir, clear_npy_dir)
-    # 转换雾图
-    convert_img2npy(haze_img_dir, haze_npy_dir)
+    if mode == 'train':
+        # 清晰图片目录
+        clear_img_dir = './train_datasets/image/clear'
+        # 清晰图片的npy存储目录
+        clear_npy_dir = './train_datasets/npy/clear'
+        # 雾图目录
+        haze_img_dir = './train_datasets/image/haze'
+        # 雾图npy文件存储目录
+        haze_npy_dir = './train_datasets/npy/haze'
+        # 转换清晰图
+        convert_img2npy(clear_img_dir, clear_npy_dir)
+        # 转换雾图
+        convert_img2npy(haze_img_dir, haze_npy_dir)
+    elif mode == 'test':
+        haze_img_dir = './test_datasets/image'
+        haze_npy_dir = './test_datasets/npy'
+        # 转换雾图
+        convert_img2npy(haze_img_dir,haze_npy_dir)
+
+

@@ -10,13 +10,14 @@ import glob
 import numpy as np
 import pickle
 import tqdm
-from deblurgan.utils import load_images, write_log
 from deblurgan.losses import wasserstein_loss, perceptual_loss
 from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import datetime
+from skimage.measure import compare_ssim as ssim
+from skimage.measure import compare_psnr
 
 # 参数设置
 batch_size = 1
@@ -30,7 +31,7 @@ log_dir = './logs'
 
 # 图片数据相关
 img_width = 256
-img_heigh = 256
+img_height = 256
 
 
 class DataLoader:
@@ -42,9 +43,9 @@ class DataLoader:
         super().__init__()
 
         # 清晰图片目录
-        self.clear_npys_dir = './datasets/npy/clear'
+        self.clear_npys_dir = './train_datasets/npy/clear'
         # 雾图图片目录
-        self.haze_npys_dir = './datasets/npy/haze'
+        self.haze_npys_dir = './train_datasets/npy/haze'
 
         # 加载所有文件名
         self.all_clear_npys_names = self._load_paths(self.clear_npys_dir)
@@ -57,7 +58,7 @@ class DataLoader:
 
         # 训练数据，验证数据，测试数据占比
         self.train_percentage = 0.9
-        self.validation_percentage = 0.06
+        self.validation_percentage = 0.04
         self.test_percentage = 1 - self.train_percentage - self.validation_percentage
 
         # 加载各数据生成器
@@ -83,7 +84,7 @@ class DataLoader:
         :return:一个列表list。list里面的每个元素都是一个字典。对应上面的'clear'和'haze'匹配对
         """
         # 持久数据对的路径
-        pkl_name = './datasets/data_paris.pkl'
+        pkl_name = './train_datasets/data_paris.pkl'
 
         if os.path.exists(pkl_name):
             pkl_file = open(pkl_name, 'rb')
@@ -121,7 +122,7 @@ class DataLoader:
         # place1 -- place2 -1 为验证数据
         # place2 - end 为测试数据
         place1 = int(total_num * self.train_percentage)
-        place2 = int(total_num * (self.train_percentage + self.test_percentage))
+        place2 = int(total_num * (self.train_percentage + self.validation_percentage))
 
         # 确定数据范围
         if mode == 'train':
@@ -136,8 +137,8 @@ class DataLoader:
         pairs = self.data_pairs[start_idx:end_idx]
         pairs_num = len(pairs)
 
-        x_datas = np.zeros((batch_size, img_heigh, img_width, 3))
-        y_datas = np.zeros((batch_size, img_heigh, img_width, 3))
+        x_datas = np.zeros((batch_size, img_height, img_width, 3))
+        y_datas = np.zeros((batch_size, img_height, img_width, 3))
 
         def build_real_pairs(pairs):
             """
@@ -160,24 +161,116 @@ class DataLoader:
         while True:
             # 随机扰乱
             permutated_indexes = np.random.permutation(pairs_num)
-            for index in range(pairs_num // batch_size):
-                batch_indexes = permutated_indexes[index * batch_size:(index + 1) * batch_size]
 
-                # batch_pairs仅仅是些文件路径
-                batch_paris = pairs[batch_indexes]
-
-                x_paths,y_paths = build_real_pairs(batch_paris)
-                # 现在要把这些文件路径对应的npy文件读取成npy arr
-                for (arr_idx, x_path), (_, y_path) in enumerate(x_paths), enumerate(y_paths):
-                    x_datas[arr_idx] = np.load(x_path)
-                    y_datas[arr_idx] = np.load(y_path)
-
+            if (pairs_num < batch_size):
+                # 所有数据量不足以提供一个batch_size
+                batch_paris = pairs[permutated_indexes]
+                x_paths, y_paths = build_real_pairs(batch_paris)
+                for idx in range(pairs_num):
+                    x_datas[idx] = np.load(x_paths[idx])
+                    y_datas[idx] = np.load(y_paths[idx])
                 yield x_datas, y_datas
+            else:
+                # 数量能够提供
+                for index in range(pairs_num // batch_size):
+                    batch_indexes = permutated_indexes[index * batch_size:(index + 1) * batch_size]
+
+                    # batch_pairs仅仅是些文件路径
+                    batch_paris = pairs[batch_indexes]
+
+                    x_paths, y_paths = build_real_pairs(batch_paris)
+                    # 现在要把这些文件路径对应的npy文件读取成npy arr
+                    for idx in range(batch_size):
+                        x_datas[idx] = np.load(x_paths[idx])
+                        y_datas[idx] = np.load(y_paths[idx])
+
+                    yield x_datas, y_datas
+
+    def load_seperate_test_datasets(self):
+        """
+        加载单独的训练数据集合。
+        1. 训练数据集合放置与test_datasets/npy下
+        :return:
+        """
+        file_paths = glob.glob(os.path.join('./test_datasets/npy','*'))
+        file_num = len(file_paths)
+
+        haze_imgs = np.zeros((file_num,img_height,img_width,3))
+        for idx,file_path in enumerate(file_paths):
+            haze_imgs[idx] = np.load(file_path)
+        return haze_imgs
 
 
 def save_all_weights(d, g, epoch_number, current_loss):
     g.save_weights(os.path.join(model_save_dir, 'generator_{}_{}.h5'.format(epoch_number, current_loss)), True)
     d.save_weights(os.path.join(model_save_dir, 'discriminator_{}.h5'.format(epoch_number)), True)
+
+
+def load_saved_weight(g, d=None):
+    """
+    加载已训练好的权重
+    :param g: 生成器
+    :param d: 判别器
+    :return:
+    """
+    # TODO: 这里需要做细化处理。判定文件是否存在。多个权重文件找到最新的权重文件
+    g.load_weights(os.path.join(model_save_dir, 'generator_49_33.h5'))
+    if d is None:
+        return
+    d.load_weights(os.path.join(model_save_dir, 'discriminator_49.h5'))
+
+
+def test():
+    """
+    测试函数。计算指标
+    :return: 
+    """
+    # 构建网络模型
+    g = generator_model()
+    # 加载模型权重
+    load_saved_weight(g)
+
+    # 初始话数据加载器
+    test_num = 500
+    data_loader = DataLoader(batch_size=test_num)
+
+    # 加载数据的方式有两种
+    # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
+    # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
+    test_haze_imgs = data_loader.load_seperate_test_datasets()
+    generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+
+    generated_imgs = (generated_imgs+1)*127.5
+    # 保存预测出来的图片
+    fig, axs = plt.subplots(1, 2)
+    for idx,generated_img in enumerate(generated_imgs):
+        axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
+        axs[0].axis('off')
+        axs[0].set_title('haze')
+
+        axs[1].imshow((generated_img.astype('uint8')))
+        axs[1].axis('off')
+        axs[1].set_title('dehazed')
+
+        fig.savefig(os.path.join('./test_datasets/dehazed','%d.jpg'%idx))
+
+    # 计算两个指标 PSNR SSIM
+    # test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
+    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+    # generated_imgs = (generated_imgs+1)*127.5
+    # PSNR = 0.0
+    # SSIM = 0.0
+    # for idx, generated_img in enumerate(generated_imgs):
+    #     # 放缩回0-255
+    #     print('img', idx)
+    #     PSNR = PSNR + compare_psnr(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
+    #     SSIM = SSIM + ssim(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
+    # # 计算平均值
+    # PSNR = PSNR / test_num
+    # SSIM = SSIM / test_num
+    #
+    # print('PSNR', PSNR)
+    # print('SSIM', SSIM)
 
 
 def train(batch_size, epochs, critic_updates=5):
@@ -217,6 +310,8 @@ def train(batch_size, epochs, critic_updates=5):
     output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
     tensorboard_callback = TensorBoard(log_dir)
 
+    # TODO: 可以在这里加入恢复权重，接力学习
+
     # 训练
     start = datetime.datetime.now()
     for epoch in tqdm.tqdm(range(epochs)):
@@ -225,8 +320,8 @@ def train(batch_size, epochs, critic_updates=5):
         for index in range(data_loader.file_nums // batch_size):
             img_haze_batch, img_clear_batch = next(data_loader.train_generator)
             # 放缩到-1 - 1
-            img_haze_batch = img_haze_batch/127.5 -1
-            img_clear_batch = img_clear_batch/127.5 -1
+            img_haze_batch = img_haze_batch / 127.5 - 1
+            img_clear_batch = img_clear_batch / 127.5 - 1
 
             generated_images = g.predict(x=img_haze_batch, batch_size=batch_size)
 
@@ -243,30 +338,37 @@ def train(batch_size, epochs, critic_updates=5):
 
             d.trainable = True
 
-        write_log(tensorboard_callback, ['g_loss', 'd_on_g_loss'], [np.mean(d_losses), np.mean(d_on_g_losses)], epochs)
+            # print log
+            print('d loss %f d_on_g loss %f' % (d_loss, d_on_g_loss[1] + d_on_g_loss[2]))
+
+            if index % 50 == 0:
+                # Test
+                img_haze_test, img_clear_test = next(data_loader.test_generator)
+                generated_images = g.predict(x=img_haze_test / 127.5 - 1, batch_size=batch_size)
+                # 放缩为0-255
+                generated_images = (generated_images + 1) * 127.5
+
+                fig, axs = plt.subplots(batch_size, 3)
+                for idx in range(batch_size):
+                    axs[idx, 0].imshow((img_haze_test[idx].astype('uint8')))
+                    axs[idx, 0].axis('off')
+                    axs[idx, 0].set_title('haze')
+
+                    axs[idx, 1].imshow((img_clear_test[idx].astype('uint8')))
+                    axs[idx, 1].axis('off')
+                    axs[idx, 1].set_title('origin')
+
+                    axs[idx, 2].imshow(generated_images[idx].astype('uint8'))
+                    axs[idx, 2].axis('off')
+                    axs[idx, 2].set_title('dehazed')
+                fig.savefig("./dehazed_result/image/dehazed/%d-%d.jpg" % (epoch, index))
+
         now = datetime.datetime.now()
-        print(np.mean(d_losses), np.mean(d_on_g_losses),'spend time %s' % (now - start))
+        print(np.mean(d_losses), np.mean(d_on_g_losses), 'spend time %s' % (now - start))
         # 保存所有权重
         save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))
 
-        # Test
-        img_haze_test,img_clear_test = next(data_loader.test_generator)
-        generated_images = g.predict(x=img_haze_test, batch_size=batch_size)
-        # 放缩为0-255
-        generated_images = (generated_images+1)*127.5
-
-        fig, axs = plt.subplots(batch_size, 2)
-        for idx in range(batch_size):
-            axs[idx,0].imshow(img_clear_test[idx])
-            axs[idx,0].axis('off')
-            axs[idx,0].set_title('原图')
-
-
-            axs[idx,1].imshow(generated_images[idx])
-            axs[idx,1].axis('off')
-            axs[idx, 1].set_title('GAN生成图')
-        fig.savefig("./dehazed_result/image/dehazed/%d.jpg" % epoch)
-
 
 if __name__ == '__main__':
-    train(2, 50, 4)
+    # train(2, 50, 4)
+    test()
