@@ -6,8 +6,8 @@ from PIL import Image
 import os
 import numpy as np
 
-img_width = 256
-img_height = 256
+img_width = 512
+img_height = 512
 
 
 def convert_img2npy(img_dir, npy_dir):
@@ -40,13 +40,13 @@ if __name__ == '__main__':
 
     if mode == 'train':
         # 清晰图片目录
-        clear_img_dir = './train_datasets/image/clear'
+        clear_img_dir = './datasets/image/clear'
         # 清晰图片的npy存储目录
-        clear_npy_dir = './train_datasets/npy/clear'
+        clear_npy_dir = './datasets/npy/clear'
         # 雾图目录
-        haze_img_dir = './train_datasets/image/haze'
+        haze_img_dir = './datasets/image/haze'
         # 雾图npy文件存储目录
-        haze_npy_dir = './train_datasets/npy/haze'
+        haze_npy_dir = './datasets/npy/haze'
         # 转换清晰图
         convert_img2npy(clear_img_dir, clear_npy_dir)
         # 转换雾图

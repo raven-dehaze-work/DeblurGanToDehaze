@@ -30,9 +30,8 @@ model_save_dir = './model_save'
 log_dir = './logs'
 
 # 图片数据相关
-img_width = 256
-img_height = 256
-
+img_width = 512
+img_height = 512
 
 class DataLoader:
     """
@@ -43,9 +42,9 @@ class DataLoader:
         super().__init__()
 
         # 清晰图片目录
-        self.clear_npys_dir = './train_datasets/npy/clear'
+        self.clear_npys_dir = './datasets/npy/clear'
         # 雾图图片目录
-        self.haze_npys_dir = './train_datasets/npy/haze'
+        self.haze_npys_dir = './datasets/npy/haze'
 
         # 加载所有文件名
         self.all_clear_npys_names = self._load_paths(self.clear_npys_dir)
@@ -84,7 +83,7 @@ class DataLoader:
         :return:一个列表list。list里面的每个元素都是一个字典。对应上面的'clear'和'haze'匹配对
         """
         # 持久数据对的路径
-        pkl_name = './train_datasets/data_paris.pkl'
+        pkl_name = './datasets/data_paris.pkl'
 
         if os.path.exists(pkl_name):
             pkl_file = open(pkl_name, 'rb')
@@ -350,17 +349,17 @@ def train(batch_size, epochs, critic_updates=5):
 
                 fig, axs = plt.subplots(batch_size, 3)
                 for idx in range(batch_size):
-                    axs[idx, 0].imshow((img_haze_test[idx].astype('uint8')))
-                    axs[idx, 0].axis('off')
-                    axs[idx, 0].set_title('haze')
+                    axs[0].imshow((img_haze_test[idx].astype('uint8')))
+                    axs[0].axis('off')
+                    axs[0].set_title('haze')
 
-                    axs[idx, 1].imshow((img_clear_test[idx].astype('uint8')))
-                    axs[idx, 1].axis('off')
-                    axs[idx, 1].set_title('origin')
+                    axs[1].imshow((img_clear_test[idx].astype('uint8')))
+                    axs[1].axis('off')
+                    axs[1].set_title('origin')
 
-                    axs[idx, 2].imshow(generated_images[idx].astype('uint8'))
-                    axs[idx, 2].axis('off')
-                    axs[idx, 2].set_title('dehazed')
+                    axs[2].imshow(generated_images[idx].astype('uint8'))
+                    axs[2].axis('off')
+                    axs[2].set_title('dehazed')
                 fig.savefig("./dehazed_result/image/dehazed/%d-%d.jpg" % (epoch, index))
 
         now = datetime.datetime.now()
@@ -370,5 +369,5 @@ def train(batch_size, epochs, critic_updates=5):
 
 
 if __name__ == '__main__':
-    # train(2, 50, 4)
-    test()
+    train(1, 50, 4)
+    # test()
