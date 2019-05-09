@@ -10,12 +10,9 @@ import glob
 import numpy as np
 import pickle
 import tqdm
-from deblurgan.losses import wasserstein_loss, perceptual_loss
-from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
-from keras.callbacks import TensorBoard
-from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import datetime
+from dehazegan.model import DehazeNet
 from skimage.measure import compare_ssim as ssim
 from skimage.measure import compare_psnr
 
@@ -30,8 +27,9 @@ model_save_dir = './model_save'
 log_dir = './logs'
 
 # 图片数据相关
-img_width = 512
-img_height = 512
+img_width = 256
+img_height = 256
+
 
 class DataLoader:
     """
@@ -191,11 +189,11 @@ class DataLoader:
         1. 训练数据集合放置与test_datasets/npy下
         :return:
         """
-        file_paths = glob.glob(os.path.join('./test_datasets/npy','*'))
+        file_paths = glob.glob(os.path.join('./test_datasets/npy', '*'))
         file_num = len(file_paths)
 
-        haze_imgs = np.zeros((file_num,img_height,img_width,3))
-        for idx,file_path in enumerate(file_paths):
+        haze_imgs = np.zeros((file_num, img_height, img_width, 3))
+        for idx, file_path in enumerate(file_paths):
             haze_imgs[idx] = np.load(file_path)
         return haze_imgs
 
@@ -219,57 +217,61 @@ def load_saved_weight(g, d=None):
     d.load_weights(os.path.join(model_save_dir, 'discriminator_49.h5'))
 
 
-def test():
+def test(mode='test', num=100):
     """
     测试函数。计算指标
+    :param mode test or real 。test即为计算PSNR和SSIM。real则生成去雾图片
+    :param num 测试的数据集合
     :return: 
     """
     # 构建网络模型
-    g = generator_model()
+    net = DehazeNet(batch_size)
+    g = net.generator
     # 加载模型权重
     load_saved_weight(g)
 
     # 初始话数据加载器
-    test_num = 500
+    test_num = num
     data_loader = DataLoader(batch_size=test_num)
 
     # 加载数据的方式有两种
     # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
     # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
-    test_haze_imgs = data_loader.load_seperate_test_datasets()
-    generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+    if mode == 'real':
+        test_haze_imgs = data_loader.load_seperate_test_datasets()
+        generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
 
-    generated_imgs = (generated_imgs+1)*127.5
-    # 保存预测出来的图片
-    fig, axs = plt.subplots(1, 2)
-    for idx,generated_img in enumerate(generated_imgs):
-        axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
-        axs[0].axis('off')
-        axs[0].set_title('haze')
+        generated_imgs = (generated_imgs + 1) * 127.5
+        # 保存预测出来的图片
+        fig, axs = plt.subplots(1, 2)
+        for idx, generated_img in enumerate(generated_imgs):
+            axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
+            axs[0].axis('off')
+            axs[0].set_title('haze')
 
-        axs[1].imshow((generated_img.astype('uint8')))
-        axs[1].axis('off')
-        axs[1].set_title('dehazed')
+            axs[1].imshow((generated_img.astype('uint8')))
+            axs[1].axis('off')
+            axs[1].set_title('dehazed')
 
-        fig.savefig(os.path.join('./test_datasets/dehazed','%d.jpg'%idx))
+            fig.savefig(os.path.join('./test_datasets/dehazed', '%d.jpg' % idx))
+    elif mode == 'test':
+        # 计算两个指标 PSNR SSIM
+        test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
+        generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+        generated_imgs = (generated_imgs + 1) * 127.5
+        PSNR = 0.0
+        SSIM = 0.0
+        for idx, generated_img in enumerate(generated_imgs):
+            # 放缩回0-255
+            print('img', idx)
+            PSNR = PSNR + compare_psnr(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
+            SSIM = SSIM + ssim(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
+        # 计算平均值
+        PSNR = PSNR / test_num
+        SSIM = SSIM / test_num
 
-    # 计算两个指标 PSNR SSIM
-    # test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
-    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
-    # generated_imgs = (generated_imgs+1)*127.5
-    # PSNR = 0.0
-    # SSIM = 0.0
-    # for idx, generated_img in enumerate(generated_imgs):
-    #     # 放缩回0-255
-    #     print('img', idx)
-    #     PSNR = PSNR + compare_psnr(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
-    #     SSIM = SSIM + ssim(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
-    # # 计算平均值
-    # PSNR = PSNR / test_num
-    # SSIM = SSIM / test_num
-    #
-    # print('PSNR', PSNR)
-    # print('SSIM', SSIM)
+        print('PSNR', PSNR)
+        print('SSIM', SSIM)
 
 
 def train(batch_size, epochs, critic_updates=5):
@@ -283,39 +285,29 @@ def train(batch_size, epochs, critic_updates=5):
     # 加载数据
     data_loader = DataLoader(batch_size)
 
-    # 构建网络模型
-    g = generator_model()
-    d = discriminator_model()
-    d_on_g = generator_containing_discriminator_multiple_outputs(g, d)
+    net = DehazeNet(batch_size)
+    g = net.generator
+    g_model = net.generator_model
+    d_model = net.discriminator_model
 
     # 保存模型结构--用于可视化
-    g.save(os.path.join(model_save_dir, "generator.h5"))
-    d.save(os.path.join(model_save_dir, "discriminator.h5"))
-    d_on_g.save(os.path.join(model_save_dir, "d_on_g.h5"))
-
-    # 编译网络模型
-    d_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-    d_on_g_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
-
-    d.trainable = True
-    d.compile(optimizer=d_opt, loss=wasserstein_loss)
-    d.trainable = False
-    loss = [perceptual_loss, wasserstein_loss]
-    loss_weights = [100, 1]
-    d_on_g.compile(optimizer=d_on_g_opt, loss=loss, loss_weights=loss_weights)
-    d.trainable = True
+    g_model.save(os.path.join(model_save_dir, "generator.h5"))
+    d_model.save(os.path.join(model_save_dir, "discriminator.h5"))
 
     # 设置discriminator的real目标和fake目标
-    output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
-    tensorboard_callback = TensorBoard(log_dir)
+    positive_y = np.ones((batch_size, 1), dtype=np.float32)
+    negative_y = -positive_y
+    dummy_y = np.zeros((batch_size, 1), dtype=np.float32)
 
     # TODO: 可以在这里加入恢复权重，接力学习
 
     # 训练
     start = datetime.datetime.now()
+    # discriminator_loss = []
+    # generator_loss = []
     for epoch in tqdm.tqdm(range(epochs)):
         d_losses = []
-        d_on_g_losses = []
+        g_losses = []
         for index in range(data_loader.file_nums // batch_size):
             img_haze_batch, img_clear_batch = next(data_loader.train_generator)
             # 放缩到-1 - 1
@@ -325,20 +317,19 @@ def train(batch_size, epochs, critic_updates=5):
             generated_images = g.predict(x=img_haze_batch, batch_size=batch_size)
 
             for _ in range(critic_updates):
-                d_loss_real = d.train_on_batch(img_clear_batch, output_true_batch)
-                d_loss_fake = d.train_on_batch(generated_images, output_false_batch)
-                d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
-                d_losses.append(d_loss)
+                d_loss = d_model.train_on_batch([img_haze_batch, generated_images],
+                                                  [positive_y, negative_y, dummy_y])
+                # discriminator_loss.append(d_losses)
 
-            d.trainable = False
-
-            d_on_g_loss = d_on_g.train_on_batch(img_haze_batch, [img_clear_batch, output_true_batch])
-            d_on_g_losses.append(d_on_g_loss)
-
-            d.trainable = True
+            g_loss = g_model.train_on_batch(img_haze_batch,
+                                              [img_clear_batch, positive_y])
+            # generator_loss.append(g_losses)
 
             # print log
-            print('d loss %f d_on_g loss %f' % (d_loss, d_on_g_loss[1] + d_on_g_loss[2]))
+            print('d_loss', d_loss)
+            print('g_loss', g_loss)
+            d_losses.append(d_loss)
+            g_losses.append(g_loss)
 
             if index % 50 == 0:
                 # Test
@@ -348,26 +339,43 @@ def train(batch_size, epochs, critic_updates=5):
                 generated_images = (generated_images + 1) * 127.5
 
                 fig, axs = plt.subplots(batch_size, 3)
-                for idx in range(batch_size):
-                    axs[0].imshow((img_haze_test[idx].astype('uint8')))
+
+                # 下面的if语句主要是兼容 batch_size = 1时。 axs的索引必须是一维的
+                if batch_size == 1:
+                    axs[0].imshow((img_haze_test[0].astype('uint8')))
                     axs[0].axis('off')
                     axs[0].set_title('haze')
 
-                    axs[1].imshow((img_clear_test[idx].astype('uint8')))
+                    axs[1].imshow((img_clear_test[0].astype('uint8')))
                     axs[1].axis('off')
                     axs[1].set_title('origin')
 
-                    axs[2].imshow(generated_images[idx].astype('uint8'))
+                    axs[2].imshow(generated_images[0].astype('uint8'))
                     axs[2].axis('off')
                     axs[2].set_title('dehazed')
+                    fig.savefig("./dehazed_result/image/dehazed/%d-%d.jpg" % (epoch, index))
+                    continue
+
+                for idx in range(batch_size):
+                    axs[idx, 0].imshow((img_haze_test[idx].astype('uint8')))
+                    axs[idx, 0].axis('off')
+                    axs[idx, 0].set_title('haze')
+
+                    axs[idx, 1].imshow((img_clear_test[idx].astype('uint8')))
+                    axs[idx, 1].axis('off')
+                    axs[idx, 1].set_title('origin')
+
+                    axs[idx, 2].imshow(generated_images[idx].astype('uint8'))
+                    axs[idx, 2].axis('off')
+                    axs[idx, 2].set_title('dehazed')
                 fig.savefig("./dehazed_result/image/dehazed/%d-%d.jpg" % (epoch, index))
 
         now = datetime.datetime.now()
-        print(np.mean(d_losses), np.mean(d_on_g_losses), 'spend time %s' % (now - start))
+        print(np.mean(d_losses), np.mean(g_losses), 'spend time %s' % (now - start))
         # 保存所有权重
-        save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))
+        save_all_weights(d_model, g_model, epoch, int(np.mean(g_losses)))
 
 
 if __name__ == '__main__':
-    train(1, 50, 4)
+    train(4, 50, 4)
     # test()
