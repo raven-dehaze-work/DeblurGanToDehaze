@@ -10,15 +10,15 @@ from .layer_utils import ReflectionPadding2D, dense_block, transition_block,res_
 # the paper defined hyper-parameter:chr
 channel_rate = 64
 # Note the image_shape must be multiple of patch_shape
-image_shape = (512, 512, 3)
+image_shape = (256, 256, 3)
 patch_shape = (channel_rate, channel_rate, 3)
 
 ngf = 64
 ndf = 64
 input_nc = 3
 output_nc = 3
-input_shape_generator = (512, 512, input_nc)
-input_shape_discriminator = (512, 512, output_nc)
+input_shape_generator = (256, 256, input_nc)
+input_shape_discriminator = (256, 256, output_nc)
 n_blocks_gen = 9
 
 
@@ -40,12 +40,12 @@ def generator_model():
         x = Activation('relu')(x)
 
     mult = 2 ** n_downsampling
-    nb_filter = ngf*mult
+    # nb_filter = ngf*mult
     for i in range(n_blocks_gen):
         x = res_block(x, ngf*mult, use_dropout=True)
         # x, nb_filter = dense_block(x, nb_layers=4, nb_filter=nb_filter, growth_rate=ngf * mult,
         #                    bottleneck=False, dropout_rate=0.5)
-        # TODO: 是否有必要家transition_block 吗？
+        # TODO: 是否有必要加transition_block？
         # x = transition_block(x, nb_filter)
     # 最后一层的denseblock 不一样，单独处理
     # x, nb_filter = dense_block(x, nb_layers=4, nb_filter=nb_filter, growth_rate=ngf * mult,
@@ -69,8 +69,6 @@ def generator_model():
 
     model = Model(inputs=inputs, outputs=outputs, name='Generator')
 
-    # summary
-    model.summary()
     return model
 
 
@@ -100,7 +98,7 @@ def discriminator_model():
 
     x = Flatten()(x)
     x = Dense(1024, activation='tanh')(x)
-    x = Dense(1, activation='sigmoid')(x)
+    x = Dense(1, activation='sigmoid',name='d-output')(x)
 
     model = Model(inputs=inputs, outputs=x, name='Discriminator')
     return model
@@ -120,6 +118,8 @@ def generator_containing_discriminator_multiple_outputs(generator, discriminator
     outputs = discriminator(generated_image)
     model = Model(inputs=inputs, outputs=[generated_image, outputs])
     return model
+
+
 
 
 if __name__ == '__main__':

@@ -6,8 +6,8 @@ from PIL import Image
 import os
 import numpy as np
 
-img_width = 512
-img_height = 512
+img_width = 256
+img_height = 256
 
 
 def convert_img2npy(img_dir, npy_dir):
@@ -36,7 +36,7 @@ def convert_img2npy(img_dir, npy_dir):
 
 
 if __name__ == '__main__':
-    mode = 'test'       # 'test' or 'train'
+    mode = 'train'       # 'test' or 'train'
 
     if mode == 'train':
         # 清晰图片目录
