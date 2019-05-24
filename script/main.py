@@ -6,6 +6,9 @@
 """
 from random import choice
 import os
+from keras.models import load_model
+from keras import backend as K
+import tensorflow as tf
 import glob
 import numpy as np
 import pickle
@@ -18,6 +21,7 @@ import matplotlib.pyplot as plt
 import datetime
 from skimage.measure import compare_ssim as ssim
 from skimage.measure import compare_psnr
+from PIL import Image
 
 # 参数设置
 batch_size = 1
@@ -25,7 +29,7 @@ epochs = 50
 
 # 文件相关
 # 模型保存目录
-model_save_dir = './model_save'
+model_save_dir = './model_save_res_block_256_vgg16'
 # TensorBoard log保存目录
 log_dir = './logs'
 
@@ -43,9 +47,9 @@ class DataLoader:
         super().__init__()
 
         # 清晰图片目录
-        self.clear_npys_dir = './train_datasets/npy/clear'
+        self.clear_npys_dir = './datasets/npy/clear'
         # 雾图图片目录
-        self.haze_npys_dir = './train_datasets/npy/haze'
+        self.haze_npys_dir = './datasets/npy/haze'
 
         # 加载所有文件名
         self.all_clear_npys_names = self._load_paths(self.clear_npys_dir)
@@ -58,7 +62,7 @@ class DataLoader:
 
         # 训练数据，验证数据，测试数据占比
         self.train_percentage = 0.9
-        self.validation_percentage = 0.04
+        self.validation_percentage = 0.05
         self.test_percentage = 1 - self.train_percentage - self.validation_percentage
 
         # 加载各数据生成器
@@ -84,7 +88,7 @@ class DataLoader:
         :return:一个列表list。list里面的每个元素都是一个字典。对应上面的'clear'和'haze'匹配对
         """
         # 持久数据对的路径
-        pkl_name = './train_datasets/data_paris.pkl'
+        pkl_name = './datasets/data_paris.pkl'
 
         if os.path.exists(pkl_name):
             pkl_file = open(pkl_name, 'rb')
@@ -192,11 +196,11 @@ class DataLoader:
         1. 训练数据集合放置与test_datasets/npy下
         :return:
         """
-        file_paths = glob.glob(os.path.join('./test_datasets/npy','*'))
+        file_paths = glob.glob(os.path.join('./test_datasets/npy', '*'))
         file_num = len(file_paths)
 
-        haze_imgs = np.zeros((file_num,img_height,img_width,3))
-        for idx,file_path in enumerate(file_paths):
+        haze_imgs = np.zeros((file_num, img_height, img_width, 3))
+        for idx, file_path in enumerate(file_paths):
             haze_imgs[idx] = np.load(file_path)
         return haze_imgs
 
@@ -231,28 +235,31 @@ def test():
     load_saved_weight(g)
 
     # 初始话数据加载器
-    test_num = 500
-    data_loader = DataLoader(batch_size=test_num)
+    # test_num = 1
+    # data_loader = DataLoader(batch_size=test_num)
+    #
+    # # 加载数据的方式有两种
+    # # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
+    # # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
+    # test_haze_imgs = data_loader.load_seperate_test_datasets()
+    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+    #
+    # generated_imgs = (generated_imgs+1)*127.5
+    # # 保存预测出来的图片
+    # fig, axs = plt.subplots(1, 1)
+    # for idx,generated_img in enumerate(generated_imgs):
+    # axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
+    # axs[0].axis('off')
+    # axs[0].set_title('haze')
 
-    # 加载数据的方式有两种
-    # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
-    # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
-    test_haze_imgs = data_loader.load_seperate_test_datasets()
-    generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
+    # axs[1].imshow((generated_img.astype('uint8')))
+    # axs[1].axis('off')
+    # axs[1].set_title('dehazed')
 
-    generated_imgs = (generated_imgs+1)*127.5
-    # 保存预测出来的图片
-    fig, axs = plt.subplots(1, 2)
-    for idx,generated_img in enumerate(generated_imgs):
-        axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
-        axs[0].axis('off')
-        axs[0].set_title('haze')
+    # fig.savefig(os.path.join('./test_dehazed','%d.jpg'%idx))
 
-        axs[1].imshow((generated_img.astype('uint8')))
-        axs[1].axis('off')
-        axs[1].set_title('dehazed')
-
-        fig.savefig(os.path.join('./test_datasets/dehazed','%d.jpg'%idx))
+    # dehazed_img = Image.fromarray(generated_img.astype('uint8'))
+    # dehazed_img.save('./test_dehazed/%d.jpg' % idx)
 
     # 计算两个指标 PSNR SSIM
     # test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
@@ -272,6 +279,63 @@ def test():
     # print('PSNR', PSNR)
     # print('SSIM', SSIM)
 
+    ##########################################
+    # 测试集新代码。直接从jpg文件中读取，避免npy转
+    #  case 1: 合成雾图去雾 生成去雾后的结果，并计算psnr，ssim
+    #  case 2: 生成雾图趣图 生成去午后的结果
+    ##########################################
+    def load_img_files(dir):
+        """
+        加载dir目录下的所有jpg后缀文件
+        :param dir:
+        :return: array数组
+        """
+        file_paths = glob.glob(os.path.join(dir, '*.jpg'))
+        file_num = len(file_paths)
+
+        imgs = np.zeros((file_num, img_height, img_width, 3))
+        for idx, file_path in enumerate(file_paths):
+            imgs[idx] = np.array(Image.open(file_path).convert('RGB'))
+        return imgs
+
+    mode = "synthesis"  # synthesis or real
+    # 清晰图目录
+    clear_imgs_dir = 'D:/Projects/Dehaze/其他论文去雾代码/HazeRD合成测试集/clear'
+    # 雾图目录
+    haze_imgs_dir = 'D:/Projects/Dehaze/其他论文去雾代码/HazeRD合成测试集/haze'
+    # 去雾结果保存目录
+    dehaze_imgs_dir = 'D:/Projects/Dehaze/自己论文去雾代码/DeBulrGanToDeHaze/script/HazeRD合成雾图去雾结果'
+    if mode == "synthesis":
+        clear_imgs = load_img_files(clear_imgs_dir)
+        haze_imgs = load_img_files(haze_imgs_dir)
+
+        # 去雾
+        generated_imgs = g.predict(haze_imgs / 127.5 - 1)
+        generated_imgs = (generated_imgs + 1) * 127.5
+
+        # 初始化指标
+        PSNR = 0
+        SSIM = 0
+
+        for idx, generated_img in enumerate(generated_imgs):
+            dehazed_img = Image.fromarray(generated_img.astype('uint8'))
+            dehazed_img.save(os.path.join(dehaze_imgs_dir, "%03d.jpg" % (idx + 1)))
+            PSNR = PSNR + compare_psnr(clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
+            SSIM = SSIM + ssim(clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
+        # 计算平均值
+        PSNR = PSNR / len(generated_imgs)
+        SSIM = SSIM / len(generated_imgs)
+        print('PSNR',PSNR)
+        print('SSIM',SSIM)
+    elif mode == 'real':
+        haze_imgs = load_img_files(haze_imgs_dir)
+        # 去雾
+        generated_imgs = g.predict(haze_imgs / 127.5 - 1)
+        generated_imgs = (generated_imgs + 1) * 127.5
+
+        for idx, generated_img in enumerate(generated_imgs):
+            dehazed_img = Image.fromarray(generated_img.astype('uint8'))
+            dehazed_img.save(os.path.join(dehaze_imgs_dir, "%03d.jpg" % (idx + 1)))
 
 def train(batch_size, epochs, critic_updates=5):
     """
@@ -286,7 +350,9 @@ def train(batch_size, epochs, critic_updates=5):
 
     # 构建网络模型
     g = generator_model()
+    # g.summary()
     d = discriminator_model()
+    d.summary()
     d_on_g = generator_containing_discriminator_multiple_outputs(g, d)
 
     # 保存模型结构--用于可视化
