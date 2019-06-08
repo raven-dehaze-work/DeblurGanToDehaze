@@ -234,51 +234,6 @@ def test():
     # 加载模型权重
     load_saved_weight(g)
 
-    # 初始话数据加载器
-    # test_num = 1
-    # data_loader = DataLoader(batch_size=test_num)
-    #
-    # # 加载数据的方式有两种
-    # # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
-    # # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
-    # test_haze_imgs = data_loader.load_seperate_test_datasets()
-    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
-    #
-    # generated_imgs = (generated_imgs+1)*127.5
-    # # 保存预测出来的图片
-    # fig, axs = plt.subplots(1, 1)
-    # for idx,generated_img in enumerate(generated_imgs):
-    # axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
-    # axs[0].axis('off')
-    # axs[0].set_title('haze')
-
-    # axs[1].imshow((generated_img.astype('uint8')))
-    # axs[1].axis('off')
-    # axs[1].set_title('dehazed')
-
-    # fig.savefig(os.path.join('./test_dehazed','%d.jpg'%idx))
-
-    # dehazed_img = Image.fromarray(generated_img.astype('uint8'))
-    # dehazed_img.save('./test_dehazed/%d.jpg' % idx)
-
-    # 计算两个指标 PSNR SSIM
-    # test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
-    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
-    # generated_imgs = (generated_imgs+1)*127.5
-    # PSNR = 0.0
-    # SSIM = 0.0
-    # for idx, generated_img in enumerate(generated_imgs):
-    #     # 放缩回0-255
-    #     print('img', idx)
-    #     PSNR = PSNR + compare_psnr(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
-    #     SSIM = SSIM + ssim(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
-    # # 计算平均值
-    # PSNR = PSNR / test_num
-    # SSIM = SSIM / test_num
-    #
-    # print('PSNR', PSNR)
-    # print('SSIM', SSIM)
-
     ##########################################
     # 测试集新代码。直接从jpg文件中读取，避免npy转
     #  case 1: 合成雾图去雾 生成去雾后的结果，并计算psnr，ssim
@@ -360,6 +315,16 @@ def train(batch_size, epochs, critic_updates=5):
     d.save(os.path.join(model_save_dir, "discriminator.h5"))
     d_on_g.save(os.path.join(model_save_dir, "d_on_g.h5"))
 
+    # (可选）同时保存结构的json文件，方便后续的h5文件转pb文件
+    def save_json(model,path):
+        json = model.to_json()
+        with open(path,'w') as f:
+            f.write(json)
+    save_json(g,os.path.join(model_save_dir,"generator.json"))
+    save_json(d,os.path.join(model_save_dir,"discriminator.json"))
+    save_json(d_on_g,os.path.join(model_save_dir,"d_on_g.json"))
+
+
     # 编译网络模型
     d_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
     d_on_g_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -436,5 +401,5 @@ def train(batch_size, epochs, critic_updates=5):
 
 
 if __name__ == '__main__':
-    # train(2, 50, 4)
-    test()
+    train(2, 50, 4)
+    # test()
