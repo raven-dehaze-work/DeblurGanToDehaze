@@ -67,7 +67,7 @@ def generator_model():
     # outputs = Lambda(lambda z: K.clip(z, -1, 1))(x)
     outputs = Lambda(lambda z: z / 2)(outputs)
     model = Model(inputs=inputs, outputs=outputs, name='Generator')
-
+    return model
 
 
 def discriminator_model():
