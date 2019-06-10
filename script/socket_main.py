@@ -1,11 +1,11 @@
 """
 使用Socket通信，完成:
-1. 手机上传雾图，服务器分析后回传
+手机上传雾图，服务器分析后回传
 """
 
 from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 import os
-from PIL import Image
+from PIL import Image, ImageFile
 import numpy as np
 import socket
 import sys
@@ -82,9 +82,12 @@ def socket_service():
                 # print()
                 if not data:
                     break
+                elif 'EOF' in str(data):
+                    f.write(data[:-len('EFO')])
+                    break
                 # write data to a file
                 f.write(data)
-        sock.close()
+        # sock.close()
         print('pic received finished')
 
     def send_img(sock):
@@ -92,25 +95,30 @@ def socket_service():
         with open(dehaze_path, 'rb') as f:
             for data in f:
                 sock.send(data)
-        sock.close()
         print('send finished')
 
     # 等待连接并处理
     idx = 0
     while True:
         sock, _ = s.accept()
-        idx += 1
-        if idx == 1:
+        # idx += 1
+        # if idx == 1:
+        #     save_haze_file(sock)
+        # elif idx == 2:
+        #     idx = 0
+        try:
             save_haze_file(sock)
-        elif idx == 2:
-            idx = 0
-            try:
-                dehaze()
-                send_img(sock)
-            except Exception as reason:
-                print(reason)
+            dehaze()
+            send_img(sock)
+        except Exception as reason:
+            print(reason)
+        finally:
+            sock.close()
 
 
 if __name__ == '__main__':
     init_net_module()
+    # 设定可读TRUNCATED 图片
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+
     socket_service()

@@ -8,6 +8,7 @@
 
 
     <ImageView
+        android:src="@drawable/haze"
         android:background="@color/colorPrimary"
         android:id="@+id/img_haze"
         android:layout_width="200dp"
@@ -22,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:src="@drawable/dehaze"
         android:background="@color/colorPrimary"
         android:id="@+id/img_dehaze"
         android:layout_width="200dp"
@@ -38,8 +40,11 @@
 
 
     <Button
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_choose_photo_background"
         android:id="@+id/bt_choose_photo"
-        android:layout_width="wrap_content"
+        android:textSize="18sp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:text="选择图片"
         app:layout_constraintBottom_toBottomOf="parent"

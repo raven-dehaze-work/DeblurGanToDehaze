@@ -77,7 +77,6 @@ public class UpLoadImgModule {
          */
         private void sendImg(String path) throws IOException {
             // 创建一个Socket对象，并指定服务端的IP及端口号
-            socket = new Socket(IP, PORT);
             InputStream inputStream = new FileInputStream(path);
             // 获取Socket的OutputStream对象用于发送数据。
             OutputStream outputStream = socket.getOutputStream();
@@ -91,7 +90,8 @@ public class UpLoadImgModule {
                 // 发送读取的数据到服务端
                 outputStream.flush();
             }
-            socket.close();
+            outputStream.write("EOF".getBytes(),0,"EOF".getBytes().length);//eof为结束标记
+            outputStream.flush();
         }
 
 
@@ -102,7 +102,6 @@ public class UpLoadImgModule {
          */
         private String recieveImg() throws IOException {
             // 发送完成，等待结果
-            socket = new Socket(IP, PORT);
             InputStream inputStream = socket.getInputStream();
             // 保存图片
             // 获取雾图图片文件名和目录
@@ -126,9 +125,12 @@ public class UpLoadImgModule {
         public void run() {
             super.run();
             try {
+                socket = new Socket(IP, PORT);
+
                 sendImg(this.path);
                 Log.i(MainActivity.class.getSimpleName(),"finish img 1");
                 String dehazeImgPath = recieveImg();
+                Log.i("dehazeImgpath",dehazeImgPath);
                 callBackListener.onDehazeSuccess(dehazeImgPath);
             } catch (IOException e) {
                 e.printStackTrace();
