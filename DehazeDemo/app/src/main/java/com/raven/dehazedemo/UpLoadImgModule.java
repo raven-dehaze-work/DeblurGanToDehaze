@@ -108,7 +108,7 @@ public class UpLoadImgModule {
             File hazeFile = new File(this.path);
             String fileName = hazeFile.getName().substring(0,hazeFile.getName().indexOf('.'));
             Log.i("file name",fileName);
-            File dehazeImg = new File(new File("/sdcard/DehazeDemo/DehazeImgs"),fileName+"_dehaze.jpg");
+            File dehazeImg = new File(new File("/sdcard/DehazeDemo/DehazeImgs"),fileName+"_dehaze"+System.currentTimeMillis()+".jpg");
             //创建图片字节流
             FileOutputStream fos = new FileOutputStream(dehazeImg);
             byte[] buf = new byte[1024];
@@ -118,6 +118,10 @@ public class UpLoadImgModule {
             {
                 fos.write(buf,0,len);
             }
+            // 判定是否写入了数据，如果没有，说明连接过程中出错
+            if(dehazeImg.length() == 0)
+                throw new IOException("服务器网络连接失败，请检查服务器是否开启！");
+
             return dehazeImg.getAbsolutePath();
         }
 
@@ -128,14 +132,15 @@ public class UpLoadImgModule {
                 socket = new Socket(IP, PORT);
 
                 sendImg(this.path);
-                Log.i(MainActivity.class.getSimpleName(),"finish img 1");
+                Log.i(MainActivity.class.getSimpleName(),"finish img send");
                 String dehazeImgPath = recieveImg();
                 Log.i("dehazeImgpath",dehazeImgPath);
                 callBackListener.onDehazeSuccess(dehazeImgPath);
             } catch (IOException e) {
                 e.printStackTrace();
+                String msg = e.getMessage();
                 Log.e(MainActivity.class.getSimpleName(),"连接失败");
-                callBackListener.onDehazeError("Socket 连接失败");
+                callBackListener.onDehazeError(msg);
             }
         }
 
