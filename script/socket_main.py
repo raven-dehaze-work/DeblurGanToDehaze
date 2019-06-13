@@ -3,7 +3,7 @@
 手机上传雾图，服务器分析后回传
 """
 
-from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
+from dehazegan.model import generator_model
 import os
 from PIL import Image, ImageFile
 import numpy as np
@@ -61,7 +61,7 @@ def socket_service():
     # 开启socket服务
     try:
         s = socket.socket()
-        s.bind(('192.168.1.104', 6666))
+        s.bind(('127.0.0.1', 6666))
         s.listen(10)
     except socket.error as msg:
         print(msg)
@@ -98,14 +98,8 @@ def socket_service():
         print('send finished')
 
     # 等待连接并处理
-    idx = 0
     while True:
         sock, _ = s.accept()
-        # idx += 1
-        # if idx == 1:
-        #     save_haze_file(sock)
-        # elif idx == 2:
-        #     idx = 0
         try:
             save_haze_file(sock)
             dehaze()

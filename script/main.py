@@ -6,15 +6,12 @@
 """
 from random import choice
 import os
-from keras.models import load_model
-from keras import backend as K
-import tensorflow as tf
 import glob
 import numpy as np
 import pickle
 import tqdm
-from deblurgan.losses import wasserstein_loss, perceptual_loss
-from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
+from dehazegan.losses import wasserstein_loss, perceptual_loss
+from dehazegan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
@@ -218,6 +215,7 @@ def load_saved_weight(g, d=None):
     :return:
     """
     # TODO: 这里需要做细化处理。判定文件是否存在。多个权重文件找到最新的权重文件
+    # 这里为了方便，我是直接写死了最新训练的模型，自己可手动修改，也可以写个程序去找最新的权重模型
     g.load_weights(os.path.join(model_save_dir, 'generator_49_33.h5'))
     if d is None:
         return
@@ -234,55 +232,10 @@ def test():
     # 加载模型权重
     load_saved_weight(g)
 
-    # 初始话数据加载器
-    # test_num = 1
-    # data_loader = DataLoader(batch_size=test_num)
-    #
-    # # 加载数据的方式有两种
-    # # 1. 采用原数据库中预备的分隔出来的数据来test。这种可采用data_loader.test_generator
-    # # 2. 单独准备了其它数据集合。可以采用data_loader.load_seperate_test_datasets() 来全部加载出来
-    # test_haze_imgs = data_loader.load_seperate_test_datasets()
-    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
-    #
-    # generated_imgs = (generated_imgs+1)*127.5
-    # # 保存预测出来的图片
-    # fig, axs = plt.subplots(1, 1)
-    # for idx,generated_img in enumerate(generated_imgs):
-    # axs[0].imshow(test_haze_imgs[idx].astype('uint8'))
-    # axs[0].axis('off')
-    # axs[0].set_title('haze')
-
-    # axs[1].imshow((generated_img.astype('uint8')))
-    # axs[1].axis('off')
-    # axs[1].set_title('dehazed')
-
-    # fig.savefig(os.path.join('./test_dehazed','%d.jpg'%idx))
-
-    # dehazed_img = Image.fromarray(generated_img.astype('uint8'))
-    # dehazed_img.save('./test_dehazed/%d.jpg' % idx)
-
-    # 计算两个指标 PSNR SSIM
-    # test_haze_imgs, test_clear_imgs = next(data_loader.test_generator)
-    # generated_imgs = g.predict(test_haze_imgs / 127.5 - 1)
-    # generated_imgs = (generated_imgs+1)*127.5
-    # PSNR = 0.0
-    # SSIM = 0.0
-    # for idx, generated_img in enumerate(generated_imgs):
-    #     # 放缩回0-255
-    #     print('img', idx)
-    #     PSNR = PSNR + compare_psnr(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'))
-    #     SSIM = SSIM + ssim(test_clear_imgs[idx].astype('uint8'), generated_img.astype('uint8'), multichannel=True)
-    # # 计算平均值
-    # PSNR = PSNR / test_num
-    # SSIM = SSIM / test_num
-    #
-    # print('PSNR', PSNR)
-    # print('SSIM', SSIM)
-
     ##########################################
     # 测试集新代码。直接从jpg文件中读取，避免npy转
     #  case 1: 合成雾图去雾 生成去雾后的结果，并计算psnr，ssim
-    #  case 2: 生成雾图趣图 生成去午后的结果
+    #  case 2: 真实雾图去雾 生成去雾后的结果
     ##########################################
     def load_img_files(dir):
         """
@@ -374,7 +327,7 @@ def train(batch_size, epochs, critic_updates=5):
 
     # 设置discriminator的real目标和fake目标
     output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
-    tensorboard_callback = TensorBoard(log_dir)
+    # tensorboard_callback = TensorBoard(log_dir)
 
     # TODO: 可以在这里加入恢复权重，接力学习
 
@@ -436,5 +389,5 @@ def train(batch_size, epochs, critic_updates=5):
 
 
 if __name__ == '__main__':
-    # train(2, 50, 4)
-    test()
+    train(2, 50, 4)
+    # test()
