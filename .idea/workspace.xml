@@ -5,6 +5,54 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e2696631-c8fd-4518-a217-d18d14edb417" name="Default Changelist" comment="代码测试完成">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/androidTest/java/com/raven/dehazedemo/ExampleInstrumentedTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/java/com/raven/dehazedemo/GetPhotoFromAlbum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/java/com/raven/dehazedemo/MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/java/com/raven/dehazedemo/UpLoadImgModule.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/drawable/button_choose_photo_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/drawable/dehaze.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/drawable/haze.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/values/styles.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/main/res/xml/file_paths.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/app/src/test/java/com/raven/dehazedemo/ExampleUnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DehazeDemo/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/socket_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/script/socket_main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,29 +66,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/script/socket_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-256">
-              <caret line="84" column="40" lean-forward="true" selection-start-line="84" selection-start-column="40" selection-end-line="84" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Anaconda3/Lib/typing.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="2345" column="8" selection-start-line="2345" selection-start-column="8" selection-end-line="2345" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/deblurgan/model.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1364">
-              <caret line="69" column="16" selection-start-line="69" selection-start-column="16" selection-end-line="69" selection-end-column="16" />
+            <state relative-caret-position="506">
+              <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
               <folding>
-                <element signature="e#0#61#0" expanded="true" />
+                <element signature="e#40#83#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/script/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="14" selection-start-line="14" selection-end-line="14" />
             </state>
           </provider>
         </entry>
@@ -95,20 +134,20 @@
         <option value="$PROJECT_DIR$/deblurgan/layer_utils.py" />
         <option value="$PROJECT_DIR$/deblurgan/custom_layers.py" />
         <option value="$PROJECT_DIR$/dehazegan/custom_layers.py" />
-        <option value="$PROJECT_DIR$/dehazegan/model.py" />
         <option value="$PROJECT_DIR$/script/test.py" />
         <option value="$PROJECT_DIR$/script/h5_to_pb.py" />
         <option value="$PROJECT_DIR$/script/weight_clipping.py" />
         <option value="$PROJECT_DIR$/deblurgan/losses.py" />
-        <option value="$PROJECT_DIR$/script/main.py" />
         <option value="$PROJECT_DIR$/script/dataset_util.py" />
         <option value="$PROJECT_DIR$/dehazegan/losses.py" />
         <option value="$PROJECT_DIR$/deblurgan/model.py" />
+        <option value="$PROJECT_DIR$/dehazegan/model.py" />
+        <option value="$PROJECT_DIR$/script/main.py" />
         <option value="$PROJECT_DIR$/script/socket_main.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
@@ -121,42 +160,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
-              <item name="deblurgan" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
-              <item name="dehazegan" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
-              <item name="script" type="462c0819:PsiDirectoryNode" />
-              <item name="img_from_socket" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Scope 'Project Files'; set:Project Files; class com.intellij.psi.search.scope.ProjectFilesScope">
           <expand>
@@ -184,10 +187,36 @@
           <select />
         </subPane>
       </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
+              <item name="dehazegan" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DeBulrGanToDeHaze" type="462c0819:PsiDirectoryNode" />
+              <item name="script" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DeBulrGanToDeHaze" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/script" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -319,8 +348,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.socket_main" />
-        <item itemvalue="Python.weight_clipping" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.weight_clipping" />
         <item itemvalue="Python.h5_to_pb" />
         <item itemvalue="Python.dataset_util" />
       </list>
@@ -364,15 +393,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30021366" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23234984" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32968238" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.33844468" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.35249457" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3789704" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -471,18 +500,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/script/main.py</url>
-          <line>414</line>
+          <line>366</line>
           <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/script/socket_main.py</url>
-          <line>111</line>
-          <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/script/socket_main.py</url>
-          <line>110</line>
-          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -610,7 +629,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dehazegan/model.py" />
     <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/keras/engine/training.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -648,26 +666,6 @@
     <entry file="file://$PROJECT_DIR$/script/weight_clipping.py" />
     <entry file="file://$PROJECT_DIR$/script/8956.jpg" />
     <entry file="file://$PROJECT_DIR$/script/dehaze.jpg" />
-    <entry file="file://$PROJECT_DIR$/script/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="740">
-          <caret line="439" column="10" selection-start-line="439" selection-start-column="10" selection-end-line="439" selection-end-column="10" />
-          <folding>
-            <element signature="e#52#77#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/script/dataset_util.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="3" lean-forward="true" selection-start-column="3" selection-end-column="3" />
-          <folding>
-            <element signature="e#17#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dehazegan/losses.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="506">
@@ -685,33 +683,63 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deblurgan/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1364">
-          <caret line="69" column="16" selection-start-line="69" selection-start-column="16" selection-end-line="69" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#61#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/Lib/typing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="2345" column="8" selection-start-line="2345" selection-start-column="8" selection-end-line="2345" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/script/img_from_socket/haze.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/script/img_from_socket/dehaze.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/typing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51436">
+          <caret line="2345" column="8" selection-start-line="2345" selection-start-column="8" selection-end-line="2345" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deblurgan/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="31" column="27" selection-end-line="129" />
+          <folding>
+            <element signature="e#0#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dehazegan/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2049">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#0#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/script/dataset_util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="3" selection-start-column="3" selection-end-column="3" />
+          <folding>
+            <element signature="e#17#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/script/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/script/socket_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-256">
-          <caret line="84" column="40" lean-forward="true" selection-start-line="84" selection-start-column="40" selection-end-line="84" selection-end-column="40" />
+        <state relative-caret-position="506">
+          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+          <folding>
+            <element signature="e#40#83#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

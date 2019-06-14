@@ -61,7 +61,7 @@ def socket_service():
     # 开启socket服务
     try:
         s = socket.socket()
-        s.bind(('127.0.0.1', 6666))
+        s.bind(('172.18.94.196', 6666))
         s.listen(10)
     except socket.error as msg:
         print(msg)

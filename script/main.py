@@ -12,7 +12,6 @@ import pickle
 import tqdm
 from dehazegan.losses import wasserstein_loss, perceptual_loss
 from dehazegan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
-from keras.callbacks import TensorBoard
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 import datetime
