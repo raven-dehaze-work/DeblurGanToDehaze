@@ -133,7 +133,7 @@ dmypy.json
 *.json
 
 # 去掉.idea目录
-.idea/
+# .idea/
 
 # 去掉所有npy文件
 *.npy
