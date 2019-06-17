@@ -1,11 +1,11 @@
-Transfering DeblurGan Network for Fog Removal
+**迁移DeblurGan网络做去雾工作**
 
 - [English Version](<https://github.com/raven-dehaze-work/DeblurGanToDehaze/blob/master/README.md>)
-- [Chinese Version](<https://github.com/raven-dehaze-work/DeblurGanToDehaze/blob/master/README-zh.md>)
+- [中文文档](<https://github.com/raven-dehaze-work/DeblurGanToDehaze/blob/master/README-zh.md>)
 
-DeblurGan paper：https://arxiv.org/pdf/1711.07064.pdf
+DeblurGan论文：https://arxiv.org/pdf/1711.07064.pdf
 
-## 1. Network structure
+## 1. 网络结构
 
 Generator
 
@@ -15,11 +15,11 @@ Discriminator
 
 ![](https://ae01.alicdn.com/kf/HTB1E7evcL1G3KVjSZFkq6yK4XXaa.jpg)
 
-## 2. Training Dataset
+## 2. 训练数据集
 
-The data set used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
+训练所用数据集来自 [RESIDE数据集](<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
 
-## 3. Defogging results
+## 3. 去雾效果
 
 
 
@@ -31,11 +31,11 @@ The data set used for training comes from [RESIDE data set] (<https://sites.goog
 
 
 
-### 4. Other
+### 4. 其它
 
-Reference to the implementation code of DeblurGan：<https://github.com/KupynOrest/DeblurGAN>
+参考了DeblurGan的实现：<https://github.com/KupynOrest/DeblurGAN>
 
-Other defogging algorithms:
+其余去雾算法：
 
 1. [DCP去雾Matlab实现](<https://github.com/raven-dehaze-work/DCP-Dehaze>)
 2. [MSCNN去雾Matlab实现](https://github.com/raven-dehaze-work/MSCNN_MATLAB)
