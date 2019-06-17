@@ -17,7 +17,7 @@ Discriminator
 
 ## 2. Training Dataset
 
-The data set used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
+The dataset used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
 
 ## 3. Defogging results
 
