@@ -17,7 +17,7 @@ Discriminator
 
 ## 2. Training Dataset
 
-The dataset used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
+The data set used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
 
 ## 3. Defogging results
 
@@ -42,3 +42,5 @@ Other defogging algorithms:
 3. [MSCNN去雾Keras实现](https://github.com/raven-dehaze-work/MSCNN_Keras)
 4. [MSCNN去雾TensorFlow实现](https://github.com/dishank-b/MSCNN-Dehazing-Tensorflow)
 5. [Dehaze-GAN TensorFlow实现](https://github.com/raven-dehaze-work/Dehaze-GAN)
+
+Corresponding post：https://www.ravenxrz.ink/archives/summary-iv-definition-and-implementation-of-the-final-defogging-scheme-deblur-ganto-dehaze.html
