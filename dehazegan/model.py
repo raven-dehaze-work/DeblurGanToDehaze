@@ -22,10 +22,21 @@ input_shape_discriminator = (256, 256, output_nc)
 n_blocks_gen = 9
 
 
-def generator_model():
-    """Build generator architecture."""
+def generator_model(mode='train'):
+    """
+    Build generator architecture.
+    :param mode: train or test
+                区别在于是否限制输入大小,如果是train mode 输入限制为image_shape大小
+                                        如果是test mode  输入无限制（主要是用于测试任意size的图片）
+    :return: 
+    """
     # Current version : ResNet block
-    inputs = Input(shape=image_shape)
+    if mode == 'train':
+        inputs = Input(shape=image_shape)
+    elif mode == 'test':
+        inputs = Input(shape=(None,None,3))
+    else:
+        raise Exception("mode input error, please input correct params")
 
     x = ReflectionPadding2D((3, 3))(inputs)
     x = Conv2D(filters=ngf, kernel_size=(7, 7), padding='valid')(x)
