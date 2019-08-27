@@ -220,7 +220,6 @@ def load_saved_weight(g, d=None):
         return
     d.load_weights(os.path.join(model_save_dir, 'discriminator_49.h5'))
 
-
 def test():
     """
     测试函数。计算指标
@@ -230,7 +229,6 @@ def test():
     g = generator_model('test')
     # 加载模型权重
     load_saved_weight(g)
-    g.summary()
 
     ##########################################
     # 测试集新代码。直接从jpg文件中读取，避免npy转
@@ -244,12 +242,25 @@ def test():
         :return: array数组
         """
         file_paths = glob.glob(os.path.join(dir, '*.jpg'))
-        file_num = len(file_paths)
 
         imgs = []
         for idx, file_path in enumerate(file_paths):
             imgs.append(np.array(Image.open(file_path).convert('RGB')))
         return np.array(imgs)
+    def predict(g,haze_imgs):
+        """
+        输入haze_imgs，用g预测clear_imgs。
+        之所以用这个函数，而不直接用g.predict，是为了适应haze_imgs中的img具有不同size的情况
+        :param g
+        :param haze_imgs: 雾图 size bound是 0 - 255
+        :return: clear_imgs (每个clear_img可能具有不同的shape) size bound 是 0 -255
+        """
+        clear_imgs = []
+        for haze_img in haze_imgs:
+            haze_img = np.expand_dims(haze_img,axis=0)
+            clear_img = g.predict(haze_img/127.5 - 1)[0]
+            clear_imgs.append((clear_img + 1) * 127.5)
+        return np.array(clear_imgs)
 
     mode = "real"  # synthesis or real
     # 清晰图目录
@@ -263,8 +274,7 @@ def test():
         haze_imgs = load_img_files(haze_imgs_dir)
 
         # 去雾
-        generated_imgs = g.predict(haze_imgs / 127.5 - 1)
-        generated_imgs = (generated_imgs + 1) * 127.5
+        generated_imgs = predict(g,haze_imgs)
 
         # 初始化指标
         PSNR = 0
@@ -283,8 +293,7 @@ def test():
     elif mode == 'real':
         haze_imgs = load_img_files(haze_imgs_dir)
         # 去雾
-        generated_imgs = g.predict(haze_imgs / 127.5 - 1)
-        generated_imgs = (generated_imgs + 1) * 127.5
+        generated_imgs = predict(g,haze_imgs)
 
         for idx, generated_img in enumerate(generated_imgs):
             dehazed_img = Image.fromarray(generated_img.astype('uint8'))
