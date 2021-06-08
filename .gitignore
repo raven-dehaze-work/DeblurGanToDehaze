@@ -127,7 +127,7 @@ dmypy.json
 *.h5
 
 # 去掉所有xml
-*.xml
+# *.xml
 
 # 去掉json
 *.json
