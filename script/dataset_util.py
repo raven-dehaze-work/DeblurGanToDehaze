@@ -18,7 +18,7 @@ def convert_img2npy(img_dir, npy_dir):
     :return:
     """
     # 得到所有clear img 的文件名
-    imgs_path = glob.glob(os.path.join(img_dir, "*.jpg"))
+    imgs_path = glob.glob(os.path.join(img_dir, "*.png"))
 
     for filepath in imgs_path:
         file_name = os.path.basename(filepath)
@@ -32,6 +32,8 @@ def convert_img2npy(img_dir, npy_dir):
         img_np = np.array(img)
         # 保存
         np.save(os.path.join(npy_dir, file_name.replace("jpg", "npy")), img_np)
+
+
 
 
 def scale_imgs(img_dir, scale_dir):

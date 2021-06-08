@@ -1,4 +1,4 @@
-Transfering DeblurGan Network for Fog Removal
+Transfer DeblurGan Network for Fog Removal
 
 - [English Version](<https://github.com/raven-dehaze-work/DeblurGanToDehaze/blob/master/README.md>)
 - [Chinese Version](<https://github.com/raven-dehaze-work/DeblurGanToDehaze/blob/master/README-zh.md>)
@@ -17,7 +17,7 @@ Discriminator
 
 ## 2. Training Dataset
 
-The data set used for training comes from [RESIDE data set] (<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
+The data set used for training comes from [RESIDE data set](<https://sites.google.com/view/reside-dehaze-datasets/reside-v0>)
 
 ## 3. Defogging results
 
@@ -33,7 +33,7 @@ The data set used for training comes from [RESIDE data set] (<https://sites.goog
 
 ### 4. Other
 
-Reference to the implementation code of DeblurGan：<https://github.com/KupynOrest/DeblurGAN>
+DeblurGan：<https://github.com/KupynOrest/DeblurGAN>
 
 Other defogging algorithms:
 
